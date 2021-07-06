@@ -1,0 +1,77 @@
+from model import losses
+#import losses
+description = "This is my config. Just try to play arround!!!"
+
+model_type = "UNET"
+
+TRAIN = True
+CLASSES = {'lane_line': (255, 255, 255)}
+LR = 0.001
+EPOCHS = 10
+BATCH_SIZE = 4
+
+SAVE_ALL_MODELS = True
+
+image_size = 640
+
+# Data folder for training, validation and testing
+list_x_train_dirs = [
+    '../training/images'
+]
+list_y_train_dirs = [
+    '../training/v2.0/labels'
+]
+list_x_valid_dirs = [
+    '../validation/images'
+]
+list_y_valid_dirs = [
+    '../validation/v2.0/labels'
+]
+list_x_test_dir = [
+    '../testing/images'
+]
+list_y_test_dir = [
+    '../testing/images'
+]
+
+# All backbone option
+# 'vgg16' 'vgg19'  
+# 'resnet18' 'resnet34' 'resnet50' 'resnet101' 'resnet152'
+# 'seresnet18' 'seresnet34' 'seresnet50' 'seresnet101' 'seresnet152'
+# 'resnext50' 'resnext101'
+# 'seresnext50' 'seresnext101'
+# 'senet154'
+# 'densenet121' 'densenet169' 'densenet201'
+# 'inceptionv3' 'inceptionresnetv2'
+# 'mobilenet' 'mobilenetv2'
+# 'efficientnetb0' 'efficientnetb1' 'efficientnetb2' 'efficientnetb3' 'efficientnetb4' 'efficientnetb5' efficientnetb6' efficientnetb7'
+backbone_name='resnet18'
+input_shape = (image_size, image_size, 3)
+encoder_freeze = True
+encoder_weights = 'imagenet'
+encoder_features = 'default'
+decoder_block_type = 'transpose'    # 'upsampling or 'transpose'
+decoder_filters = (128, 64, 32, 16, 8)
+
+pretrained_model = None
+
+import os
+x = os.path.basename(__file__).replace('.py', '')
+#x = "config01"
+import pathlib
+
+base_log_dir = "saved_models\{}".format(x)
+pathlib.Path(base_log_dir).mkdir(parents=True, exist_ok=True)
+
+base_model_path = base_log_dir + "\model_"
+log_file = base_log_dir + "\log.csv"
+my_log_file = base_log_dir + "\mylog.csv"
+saved_freeze_model = base_log_dir + "\freezed_model.pb" 
+tensorboard_log_dir = base_log_dir + r"\b_logs"
+
+# loss = losses.binary_focal_loss + losses.dice_loss
+loss = losses.binary_focal_tversky_loss
+
+# threshold and per_image for evaluation metrics
+metric_threshold = 0.5
+metric_per_image = True
